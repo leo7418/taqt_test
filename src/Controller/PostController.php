@@ -111,7 +111,7 @@ class PostController extends AbstractController {
 	}
 
 	/**
-	 * @Route("/posts/{id}", methods="PUT")
+	 * @Route("/posts/{id}", methods="POST|PUT")
 	 * @param Request $request
      * @return JsonResponse
 	 */
@@ -124,21 +124,23 @@ class PostController extends AbstractController {
 			return new JsonNotFound( $id );
 		}
 
-		$name    = $request->request->get('name');
-		$content = $request->request->get('content');
+		$name     = $request->request->get('name');
+		$content  = $request->request->get('content');
+		$modified = false;
 
-		if ( null !== $name ) {
+		if ( null !== $name && $name !== $post->getName() ) {
 			$post->setName( $name );
+			$modified = true;
 		}
-		if ( null !== $content ) {
+		if ( null !== $content && $content !== $post->getContent() ) {
 			$post->setContent( $content );
+			$modified = true;
 		}
-		if ( null !== $name || null !== $content ) {
+
+		if ( true === $modified ) {
 			$this->updatePost( $post );
-			return new JsonSuccess( array( 'id' => $post->getId() ), 200 );
-		} else {
-			return new JsonSuccess( array( 'id' => $post->getId() ), 304 );
 		}
+		return new JsonSuccess( array( 'id' => $post->getId() ), 200 );
 	}
 
 	/**
