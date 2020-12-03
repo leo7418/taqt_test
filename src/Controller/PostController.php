@@ -2,23 +2,27 @@
 
 namespace App\Controller;
 
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Protocol\JsonMissingParameter;
+use App\Protocol\JsonSuccess;
 
 class PostController extends AbstractController {
 
 	/**
 	 * Check parameters and throw an error if a parameter is missing.
+	 * 
+	 * @return true|string Return the name of the missing parameter or true if nothing is missing.
 	 */
 	private function checkParameters( $parameters ) {
 		foreach ( $parameters as $name => $value ) {
 			if ( null === $value ) {
-				throw new Exception( 'Missing parameter ' . $name );
+				return $name;
 			}
 		}
+		return true;
 	}
 
 	/**
@@ -44,9 +48,12 @@ class PostController extends AbstractController {
 		$name    = $request->request->get('name');
 		$content = $request->request->get('content'); 
 
-		$this->checkParameters( array( 'name' => $name, 'content' => $content ) );
+		$missing = $this->checkParameters( array( 'name' => $name, 'content' => $content ) );
+		if ( true !== $missing ) {
+			return new JsonMissingParameter( $missing );
+		}
 
-		return new JsonResponse( 'ok' );
+		return new JsonSuccess( array( 'id' => 0 ), 200 );
 	}
 
 	/**
