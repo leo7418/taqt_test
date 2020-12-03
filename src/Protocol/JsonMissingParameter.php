@@ -7,8 +7,7 @@ class JsonMissingParameter extends JsonError {
 	/**
 	 * Contructor.
 	 * 
-	 * @param string $data
-	 * @param int    $status
+	 * @param string $parameter_name
 	 */
     function __construct( $parameter_name ) {
         parent::__construct( "Missing parameter '$parameter_name'", 400 );

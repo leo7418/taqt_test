@@ -2,8 +2,8 @@
 
 namespace App\EventSubscriber;
 
+use App\Protocol\JsonError;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
@@ -21,6 +21,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
 		$exception = $event->getThrowable();
 		$status    = $exception->getCode();
 
-		$event->setResponse( new JsonResponse( $exception->getMessage(), 0 !== $status ? $status : 200 ) );
+		$event->setResponse( new JsonError( $exception->getMessage(), 0 !== $status ? $status : 400 ) );
 	}
 }
