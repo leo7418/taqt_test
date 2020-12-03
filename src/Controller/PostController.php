@@ -11,6 +11,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class PostController extends AbstractController {
 
 	/**
+	 * Check parameters and throw an error if a parameter is missing.
+	 */
+	private function checkParameters( $parameters ) {
+		foreach ( $parameters as $name => $value ) {
+			if ( null === $value ) {
+				throw new Exception( 'Missing parameter ' . $name );
+			}
+		}
+	}
+
+	/**
 	 * @Route("/posts", methods="GET")
      * @return JsonResponse
 	 */
@@ -30,6 +41,12 @@ class PostController extends AbstractController {
      * @return JsonResponse
 	 */
 	public function createPost( Request $request ) {
+		$name    = $request->request->get('name');
+		$content = $request->request->get('content'); 
+
+		$this->checkParameters( array( 'name' => $name, 'content' => $content ) );
+
+		return new JsonResponse( 'ok' );
 	}
 
 	/**

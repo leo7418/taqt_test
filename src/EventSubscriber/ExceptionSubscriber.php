@@ -3,29 +3,24 @@
 namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ExceptionHandler implements EventSubscriberInterface
+class ExceptionSubscriber implements EventSubscriberInterface
 {
     public static function getSubscribedEvents()
     {
         return array(
-			KernelEvents::REQUEST   => 'onPageNotFound',
-			KernelEvents::EXCEPTION => 'onKernelException',
+			KernelEvents::EXCEPTION => array( array( 'onKernelException', 0 ) ),
         );
     }
-	
-	public function onPageNotFound(ExceptionEvent $event) {
-		return new JsonResponse( 'Not found' );
-	}
 
     public function onKernelException(ExceptionEvent $event)
     {
-//        $exception = $event->getThrowable();
-//		$event->setResponse(new HttpError($exception->getStatusCode()));
+		$exception = $event->getThrowable();
+		$status    = $exception->getCode();
 
-		$event->setResponse(new JsonResponse( "ERROR" ));
+		$event->setResponse( new JsonResponse( $exception->getMessage(), 0 !== $status ? $status : 200 ) );
 	}
 }
