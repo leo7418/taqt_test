@@ -21,6 +21,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
 		$exception = $event->getThrowable();
 		$status    = $exception->getCode();
 
-		$event->setResponse( new JsonError( $exception->getMessage(), 0 !== $status ? $status : 400 ) );
+		$event->setResponse( new JsonError( $exception->getMessage(), 0 !== $status ? $status : 404 ) );
 	}
 }
